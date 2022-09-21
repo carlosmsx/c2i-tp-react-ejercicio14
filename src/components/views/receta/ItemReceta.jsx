@@ -5,7 +5,7 @@ import {Link} from 'react-router-dom';
 
 const ItemReceta = ({ receta, consultarAPI }) => {
     const { nombre, _id, imagen, ingredientes, instrucciones } = { ...receta };
-    const URL_API = process.env.REACT_APP_API_CAFETERIA;
+    const URL_API = process.env.REACT_APP_API_URL;
 
     const handleDelete = () => {
         Swal.fire({
