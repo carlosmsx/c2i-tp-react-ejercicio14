@@ -1,0 +1,21 @@
+.fondo {
+    opacity: 0.1;
+    filter:alpha(opacity=10);
+    background-image: "https://img.freepik.com/vector-gratis/fondo-estilo-guinga_1048-2586.jpg"
+}
+
+.footer {
+    position:absolute;
+    left:0;
+    bottom:0;
+    right:0;
+    /* padding-bottom:60px; */
+    /* height: calc(100% - 60px); */
+}
+
+.truncate {
+    max-width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

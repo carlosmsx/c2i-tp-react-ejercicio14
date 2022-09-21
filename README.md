@@ -14,4 +14,7 @@ npm i react-bootstrap bootstrap
 ## Sweetalert 2
 npm install --save sweetalert2 sweetalert2-react-content
 
+## Route
+npm i react-router-dom
+
 ### Carlos Escobar
