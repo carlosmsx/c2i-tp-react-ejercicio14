@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Card } from "react-bootstrap";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 const DetalleReceta = () => {
     const { id } = useParams();
@@ -34,6 +34,9 @@ const DetalleReceta = () => {
                     <Card.Subtitle>Instrucciones</Card.Subtitle>
                     <Card.Text>{receta.instrucciones}</Card.Text>
                 </Card.Body>
+                <Link to="/" className="btn btn-primary">
+                    Cerrar
+                </Link>
             </Card>
         </div>
     );
