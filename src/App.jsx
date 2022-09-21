@@ -7,6 +7,7 @@ import AdministrarReceta from './components/views/receta/AdministrarReceta';
 import CrearReceta from './components/views/receta/CrearReceta';
 import Error404 from './components/views/Error404';
 import EditarReceta from './components/views/receta/EditarReceta';
+import DetalleReceta from './components/views/receta/DetalleReceta';
 
 function App() {
   return (
@@ -15,10 +16,10 @@ function App() {
         <Header/>
         <Routes>
           <Route exact path='/' element={<Home/>}></Route>
-          <Route exact path='/administrar' element={<AdministrarReceta/>}></Route>
-          <Route exact path='/administrar/crear' element={<CrearReceta/>}></Route>
-          <Route exact path='/administrar/editar/:id' element={<EditarReceta/>}></Route>
-          {/* <Route exact path='/administrar/producto/detalle/:id' element={<DetalleProducto></DetalleProducto>}></Route> */}
+          <Route exact path='/receta/administrar' element={<AdministrarReceta/>}></Route>
+          <Route exact path='/receta/crear' element={<CrearReceta/>}></Route>
+          <Route exact path='/receta/editar/:id' element={<EditarReceta/>}></Route>
+          <Route exact path='/receta/detalle/:id' element={<DetalleReceta></DetalleReceta>}></Route>
           <Route path='*' element={<Error404/>}></Route>
         </Routes>
         <Footer/>
