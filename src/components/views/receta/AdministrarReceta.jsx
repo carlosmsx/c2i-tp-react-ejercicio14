@@ -2,14 +2,21 @@ import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import { Table } from "react-bootstrap";
 import ItemReceta from "./ItemReceta";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { checkUser } from "../../helpers";
 
 const AdministrarReceta = () => {
+    const navigate = useNavigate();
     const API_URL = process.env.REACT_APP_API_URL;
 
     const [recetas, setRecetas] = useState([]);
 
     useEffect(() => {
+        const usuario = checkUser();
+        if (usuario === null) navigate('/login');
+        else if (usuario.valido===false) navigate('/login');
+        else if (usuario.perfil!=='admin') navigate('/');
+        
         consultarAPI();
     }, []);
 

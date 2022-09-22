@@ -15,7 +15,6 @@ const Home = () => {
             const respuesta = await fetch(API_URL);
             const listaRecetas = await respuesta.json();
             setRecetas(listaRecetas);
-            console.log(listaRecetas);
         } catch (error) {
             console.log(error);
             //TODO: mostrar alert

@@ -8,3 +8,19 @@ export const validarUrl = (input)=>{
     return patron.test(input);
 }
 
+export const checkUser = () => {
+    const KEY = process.env.REACT_APP_LOCALSTORAGE_KEY;
+    const usuario = JSON.parse(localStorage.getItem(KEY)) || null;
+    
+    return usuario;
+}
+
+export const validateUser = (usuario) => {
+    const KEY = process.env.REACT_APP_LOCALSTORAGE_KEY;
+    localStorage.setItem(KEY, JSON.stringify(usuario));
+}
+
+export const invalidateUser = (usuario) => {
+    const KEY = process.env.REACT_APP_LOCALSTORAGE_KEY;
+    localStorage.setItem(KEY, null);
+}

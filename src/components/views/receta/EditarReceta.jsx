@@ -1,8 +1,9 @@
 import {useEffect, useState, useRef} from 'react';
 import {Form, Button} from 'react-bootstrap';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 //import { cantidadCaracteres, validarUrl } from "./helpers";
 import Swal from 'sweetalert2'
+import { checkUser } from '../../helpers';
 
 const EditarReceta = () => {
     //recuperar datos de la receta
@@ -18,9 +19,14 @@ const EditarReceta = () => {
     const ingredientesRef = useRef("");
     const instruccionesRef = useRef("");
 
-    const navegacion = useNavigate();
+    const navigate = useNavigate();
 
     useEffect(()=>{
+        const usuario = checkUser();
+        if (usuario === null) navigate('/login');
+        else if (usuario.valido===false) navigate('/login');
+        else if (usuario.perfil!=='admin') navigate('/');
+
         consultarAPI();
     },[])
 
@@ -74,12 +80,12 @@ const EditarReceta = () => {
             {
                 Swal.fire(
                     'Receta modificada',
-                    'La receta fue modificado correctamente',
+                    'La receta fue modificada correctamente',
                     'success'
                 );
 
                 //redirecciono a la tabla de recetas
-                navegacion('/receta/administrar');
+                navigate('/receta/administrar');
             }
         }
         catch(error)
@@ -111,13 +117,12 @@ const EditarReceta = () => {
                     <Form.Control as="textarea" rows={4} defaultValue={receta.instrucciones} ref={instruccionesRef}/>
                 </Form.Group>
 
-                <Button variant="primary" type="submit">
+                <Button variant="primary" type="submit" className="me-1">
                     Guardar
                 </Button>
-                <Link to="/receta/administrar" className="ms-3 btn btn-danger">
-                    Cancelar
-                </Link>
-
+                <Button variant="secondary" onClick={()=>{navigate(-1);}}>
+                    Cerrar
+                </Button>
             </Form>
         </section>
     );

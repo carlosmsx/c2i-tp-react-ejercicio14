@@ -1,9 +1,20 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import { checkUser } from "../../helpers";
 
 const CrearReceta = () => {
+    //inicializar useNavigate
+    const navigate = useNavigate();
+
+    useEffect(()=>{
+        const usuario = checkUser();
+        if (usuario === null) navigate('/login');
+        else if (usuario.valido===false) navigate('/login');
+        else if (usuario.perfil!=='admin') navigate('/');
+    }, []);
+
     const API_URL = process.env.REACT_APP_API_URL;
 
     const [nombre, setNombre] = useState("");
@@ -12,9 +23,6 @@ const CrearReceta = () => {
     const [instrucciones, setInstrucciones] = useState("");
 
     const [mensajeError, setMensajeError] = useState(false);
-
-    //inicializar useNavigate
-    const navegacion = useNavigate();
 
     const handleSubmit = async(e)=>{
         e.preventDefault();
@@ -47,7 +55,7 @@ const CrearReceta = () => {
                 );
 
                 //redirecciono a administracion
-                navegacion('/receta/administrar');
+                navigate('/receta/administrar');
             }
         } 
         catch(error) {
@@ -87,8 +95,11 @@ const CrearReceta = () => {
                         3-..." onChange={(e) => setInstrucciones(e.target.value)} />
                 </Form.Group>
 
-                <Button variant="primary" type="submit">
+                <Button variant="primary" type="submit" className="me-1">
                     Guardar
+                </Button>
+                <Button className="btn btn-primary" onClick={()=>{navigate(-1);}}>
+                    Cancelar
                 </Button>
             </Form>
             {mensajeError === true ? <Alert variant="danger">Debe corregir los datos</Alert> : null}

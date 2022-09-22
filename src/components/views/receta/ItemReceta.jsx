@@ -42,11 +42,11 @@ const ItemReceta = ({ receta, consultarAPI }) => {
             {/* <td>{_id}</td> */}
             <td>{nombre}</td>
             {/* <td>{imagen}</td> */}
-            <td>{ingredientes}</td>
-            <td>{instrucciones}</td>
+            <td className="truncate">{ingredientes}</td>
+            <td className="truncate">{instrucciones}</td>
             <td>
-                <Link className="btn btn-success" to={`/receta/detalle/${_id}`}>Detalle</Link>
-                <Link className="btn btn-warning" to={`/receta/editar/${_id}`}>Editar</Link>
+                <Link className="me-1 btn btn-success" to={`/receta/detalle/${_id}`}>Detalle</Link>
+                <Link className="me-1 btn btn-warning" to={`/receta/editar/${_id}`}>Editar</Link>
                 <Button variant="danger" onClick={handleDelete}>
                     Borrar
                 </Button>

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Card } from "react-bootstrap";
-import { Link, useParams } from "react-router-dom";
+import { Card, Button } from "react-bootstrap";
+import { useParams, useNavigate } from "react-router-dom";
 
 const DetalleReceta = () => {
     const { id } = useParams();
-    console.log(id);
+    const navigate = useNavigate();
 
     const API_URL = process.env.REACT_APP_API_URL;
     const [receta, setReceta] = useState({});
@@ -34,9 +34,9 @@ const DetalleReceta = () => {
                     <Card.Subtitle>Instrucciones</Card.Subtitle>
                     <Card.Text>{receta.instrucciones}</Card.Text>
                 </Card.Body>
-                <Link to="/" className="btn btn-primary">
+                <Button className="btn btn-primary" onClick={()=>{navigate(-1);}}>
                     Cerrar
-                </Link>
+                </Button>
             </Card>
         </div>
     );

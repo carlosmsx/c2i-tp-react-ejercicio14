@@ -13,13 +13,12 @@ const Header = () => {
                     <NavLink className="nav-item nav-link" end to="/">Inicio</NavLink>
                     <NavLink className="nav-item nav-link" end to="/receta/administrar">Administrar</NavLink>
                     <NavLink className="nav-item nav-link" end to="/receta/crear">Crear</NavLink>
+                    <NavLink className="nav-item nav-link" end to="/login">Iniciar Sesion</NavLink>
                 </Nav>
             </Navbar.Collapse>
             </Container>
         </Navbar>
     )
 }
-        
-
 
 export default Header;
