@@ -1,127 +1,177 @@
-import {useEffect, useState, useRef} from 'react';
-import {Form, Button} from 'react-bootstrap';
-import { useParams, useNavigate } from 'react-router-dom';
-//import { cantidadCaracteres, validarUrl } from "./helpers";
-import Swal from 'sweetalert2'
-import { checkUser } from '../../helpers';
+import { useEffect, useState, useRef } from "react";
+import { Form, Button } from "react-bootstrap";
+import { useParams, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import { checkUser, cantidadCaracteres } from "../../helpers";
 
 const EditarReceta = () => {
     //recuperar datos de la receta
-    const {id} = useParams();
+    const { id } = useParams();
 
     //variable de entorno
     const URL_API = process.env.REACT_APP_API_URL;
-    
-    const [receta, setReceta]=useState({});
-    //referencias
-    const nombreRef = useRef("");
-    const imagenRef = useRef("");
-    const ingredientesRef = useRef("");
-    const instruccionesRef = useRef("");
+
+    const [form, setForm] = useState({});
+    const [errors, setErrors] = useState({});
+    const [mensajeError, setMensajeError] = useState("");
+
+    const setField = (field, value) => {
+        setForm({
+            ...form,
+            [field]: value,
+        });
+        // Check and see if errors exist, and remove them from the error object:
+        if (!!errors[field])
+            setErrors({
+                ...errors,
+                [field]: null,
+            });
+    };
+
+    const findFormErrors = () => {
+        const { nombre, imagen, ingredientes, instrucciones } = form;
+        const newErrors = {};
+        // nombre errors
+        if (!nombre || nombre === "") newErrors.nombre = "Ingrese un nombre";
+        else if (!cantidadCaracteres(nombre, 2, 30)) newErrors.nombre = "El nombre debe tener entre 2 y 30 caracteres";
+
+        // imagen errors
+        if (!imagen || imagen === "") newErrors.imagen = "Ingrese url de imagen";
+        else if (!cantidadCaracteres(imagen, 1, 100)) newErrors.imagen = "La imagen debe tener entre 1 y 100 caracteres";
+        //else if (!validarUrl(imagen)) newErrors.imagen = 'Ingrese una URL válida'
+
+        // ingredientes errors
+        if (!ingredientes || ingredientes === "") newErrors.ingredientes = "Ingrese los ingredientes";
+        else if (!cantidadCaracteres(ingredientes, 1, 200))
+            newErrors.ingredientes = "Los ingredientes deben tener entre 1 y 200 caracteres";
+
+        // instrucciones errors
+        if (!instrucciones || instrucciones === "") newErrors.instrucciones = "Ingrese las instrucciones";
+        else if (!cantidadCaracteres(instrucciones, 1, 200))
+            newErrors.instrucciones = "Las instrucciones deben tener entre 1 y 200 caracteres";
+
+        return newErrors;
+    };
 
     const navigate = useNavigate();
 
-    useEffect(()=>{
+    useEffect(() => {
         const usuario = checkUser();
-        if (usuario === null) navigate('/login');
-        else if (usuario.valido===false) navigate('/login');
-        else if (usuario.perfil!=='admin') navigate('/');
+        if (usuario === null || usuario.valido === false || usuario.perfil !== "admin") navigate("/login");
 
         consultarAPI();
-    },[])
+    }, []);
 
-    const consultarAPI = async()=>{
-        try 
-        {
-            const respuesta = await fetch(URL_API+`/${id}`);
+    const consultarAPI = async () => {
+        try {
+            const respuesta = await fetch(URL_API + `/${id}`);
             const dato = await respuesta.json();
-            setReceta(dato);
-        }
-        catch(error)
-        {
+            setForm({
+                nombre: dato.nombre,
+                imagen: dato.imagen,
+                ingredientes: dato.ingredientes,
+                instrucciones: dato.instrucciones,
+            });
+        } catch (error) {
             console.log(error);
         }
     };
 
-    const handleSubmit = async (e) =>
-    {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        //aplicar las validaciones aquí
-        // if (cantidadCaracteres(nombreRef.current.value, 2, 50) && validarPrecio(ingredientesRef.current.value) && validarUrl(imagenRef.current.value) /*categoria */) {
-        // ifinstruccionesres(nombreRef.current.value, 2, 50) && validarPrecio(ingredientesRef.current.value) && validarUrl(imagenRef.current.value) /*categoria */) {
-        //     console.log("validacion ok");
-        // }
-        // else
-        // {
-        //     console.log("error validacion");
-        // }
+        //validar
+        const newErrors = findFormErrors();
+        if (Object.keys(newErrors).length > 0) {
+            // We got errors!
+            setErrors(newErrors);
+            return;
+        }
 
         //creo el objeto
-        const recetaEditar = {
+        const receta = {
+            ...form,
             _id: id,
-            nombre: nombreRef.current.value,
-            imagen: imagenRef.current.value,
-            ingredientes: ingredientesRef.current.value,
-            instrucciones: instruccionesRef.current.value,
-        }
+        };
 
         //pedir a la api la actualizacion
-        try
-        {
-            const respuesta = await fetch(URL_API+`/${id}`, {
+        try {
+            const respuesta = await fetch(URL_API + `/${id}`, {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify(recetaEditar)
+                body: JSON.stringify(receta),
             });
-            if (respuesta.status === 200)
-            {
-                Swal.fire(
-                    'Receta modificada',
-                    'La receta fue modificada correctamente',
-                    'success'
-                );
+            if (respuesta.status === 200) {
+                Swal.fire("Receta modificada", "La receta fue modificada correctamente", "success");
 
                 //redirecciono a la tabla de recetas
-                navigate('/receta/administrar');
+                navigate("/receta/administrar");
             }
-        }
-        catch(error)
-        {
+        } catch (error) {
             console.log(error);
             //TODO
         }
-    }
+    };
 
     return (
         <section className="container">
             <h1 className="display-4 mt-5">Editar Receta</h1>
             <hr />
             <Form onSubmit={handleSubmit}>
-                <Form.Group className="mb-3" controlId="formNombreReceta">
-                    <Form.Label>Nombre Receta</Form.Label>
-                    <Form.Control type="text" defaultValue={receta.nombre} ref={nombreRef}/>
+                <Form.Group className="mb-3" controlId="formNombre">
+                    <Form.Label>Nombre</Form.Label>
+                    <Form.Control
+                        type="text"
+                        value={form.nombre}
+                        onChange={(e) => setField("nombre", e.target.value)}
+                        isInvalid={!!errors.nombre}
+                    />
+                    <Form.Control.Feedback type="invalid">{errors.nombre}</Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formImagen">
                     <Form.Label>Imagen</Form.Label>
-                    <Form.Control type="text" defaultValue={receta.imagen} ref={imagenRef}/>
+                    <Form.Control
+                        type="text"
+                        value={form.imagen}
+                        onChange={(e) => setField("imagen", e.target.value)}
+                        isInvalid={!!errors.imagen}
+                    />
+                    <Form.Control.Feedback type="invalid">{errors.imagen}</Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formIngredientes">
                     <Form.Label>Ingredientes</Form.Label>
-                    <Form.Control as="textarea" rows={4} defaultValue={receta.ingredientes} ref={ingredientesRef}/>
+                    <Form.Control
+                        as="textarea"
+                        rows={4}
+                        value={form.ingredientes}
+                        onChange={(e) => setField("ingredientes", e.target.value)}
+                        isInvalid={!!errors.ingredientes}
+                    />
+                    <Form.Control.Feedback type="invalid">{errors.ingredientes}</Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formInstrucciones">
                     <Form.Label>Instrucciones</Form.Label>
-                    <Form.Control as="textarea" rows={4} defaultValue={receta.instrucciones} ref={instruccionesRef}/>
+                    <Form.Control
+                        as="textarea"
+                        rows={4}
+                        value={form.instrucciones}
+                        onChange={(e) => setField("instrucciones", e.target.value)}
+                        isInvalid={!!errors.instrucciones}
+                    />
+                    <Form.Control.Feedback type="invalid">{errors.instrucciones}</Form.Control.Feedback>
                 </Form.Group>
 
                 <Button variant="primary" type="submit" className="me-1">
                     Guardar
                 </Button>
-                <Button variant="secondary" onClick={()=>{navigate(-1);}}>
-                    Cerrar
+                <Button
+                    variant="secondary"
+                    onClick={() => {
+                        navigate(-1);
+                    }}>
+                    Cancelar
                 </Button>
             </Form>
         </section>

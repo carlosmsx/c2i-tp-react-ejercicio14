@@ -13,9 +13,8 @@ const AdministrarReceta = () => {
 
     useEffect(() => {
         const usuario = checkUser();
-        if (usuario === null) navigate('/login');
-        else if (usuario.valido===false) navigate('/login');
-        else if (usuario.perfil!=='admin') navigate('/');
+        if (usuario===null || usuario.valido===false || usuario.perfil!=='admin') 
+            navigate('/login');
         
         consultarAPI();
     }, []);

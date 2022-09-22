@@ -10,19 +10,11 @@ const CrearReceta = () => {
 
     useEffect(()=>{
         const usuario = checkUser();
-        if (usuario === null) navigate('/login');
-        else if (usuario.valido===false) navigate('/login');
-        else if (usuario.perfil!=='admin') navigate('/');
+        if (usuario===null || usuario.valido===false || usuario.perfil!=='admin') 
+            navigate('/login');
     }, []);
 
     const API_URL = process.env.REACT_APP_API_URL;
-
-    // const [nombre, setNombre] = useState("");
-    // const [imagen, setImagen] = useState("");
-    // const [ingredientes, setIngredientes] = useState("");
-    // const [instrucciones, setInstrucciones] = useState("");
-
-    //const [mensajeError, setMensajeError] = useState(false);
 
     const [form, setForm] = useState({});
     const [errors, setErrors ] = useState({});

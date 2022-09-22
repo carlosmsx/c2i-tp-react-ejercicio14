@@ -25,7 +25,7 @@ export const setLoggedUser = (usuario) => {
     localStorage.setItem(KEY, JSON.stringify(usuario));
 }
 
-export const invalidateUser = (usuario) => {
+export const invalidateUser = () => {
     const KEY = process.env.REACT_APP_LOCALSTORAGE_KEY;
     localStorage.setItem(KEY, null);
 }

@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { setLoggedUser, validarEmail, cantidadCaracteres } from "../helpers";
 
-const Login = () => {
+const Login = (props) => {
     const API_AUTH = process.env.REACT_APP_API_AUTH;
 
     const [form, setForm] = useState({});
@@ -43,7 +43,7 @@ const Login = () => {
 
     const handleSubmit = async(e)=>{
         e.preventDefault();
-        
+
         //validar
         const newErrors = findFormErrors();
         if ( Object.keys(newErrors).length > 0 ) {
@@ -55,11 +55,14 @@ const Login = () => {
         const usuario = form;
         usuario.valido = false; //invalido por defecto
         setMensajeError('');
+        props.setAdminLogged(false);
         if (usuario.email==='admin@gmail.com' && usuario.password ==='12345')
         {
             usuario.valido=true;
             usuario.perfil='admin';
             setLoggedUser(usuario);
+            props.setAdminLogged(true);
+            props.setSesionIniciada(true);
             navigate("/receta/administrar");
         }
         else if (usuario.email==='user@gmail.com' && usuario.password ==='12345') 
@@ -67,9 +70,11 @@ const Login = () => {
             usuario.valido=true;
             usuario.perfil='usuario';
             setLoggedUser(usuario);
+            props.setSesionIniciada(true);
             navigate("/");
         }
         else {
+            props.setSesionIniciada(false);
             setMensajeError('Usario o contraseña no válido(s)');
         }
 

@@ -9,15 +9,21 @@ import Error404 from './components/views/Error404';
 import EditarReceta from './components/views/receta/EditarReceta';
 import DetalleReceta from './components/views/receta/DetalleReceta';
 import Login from './components/views/Login';
+import { useState } from 'react';
+import Logoff from './components/views/Logoff';
 
 function App() {
+  const [adminLogged, setAdminLogged] = useState(false);
+  const [sesionIniciada, setSesionIniciada] = useState(false);
+
   return (
     <div>
       <BrowserRouter>
-        <Header/>
+        <Header adminLogged={adminLogged} sesionIniciada={sesionIniciada}/>
         <Routes>
           <Route exact path='/' element={<Home/>}></Route>
-          <Route exact path='/login' element={<Login/>}></Route>
+          <Route exact path='/login' element={<Login setAdminLogged={setAdminLogged} setSesionIniciada={setSesionIniciada}/>}></Route>
+          <Route exact path='/logoff' element={<Logoff setAdminLogged={setAdminLogged} setSesionIniciada={setSesionIniciada}/>}></Route>
           <Route exact path='/receta/administrar' element={<AdministrarReceta/>}></Route>
           <Route exact path='/receta/crear' element={<CrearReceta/>}></Route>
           <Route exact path='/receta/editar/:id' element={<EditarReceta/>}></Route>
