@@ -2,46 +2,75 @@ import React, {useState} from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-import { validateUser, invalidateUser } from "../helpers";
+import { setLoggedUser, validarEmail, cantidadCaracteres } from "../helpers";
 
 const Login = () => {
     const API_AUTH = process.env.REACT_APP_API_AUTH;
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-
-    const [mensajeError, setMensajeError] = useState(false);
+    const [form, setForm] = useState({});
+    const [errors, setErrors ] = useState({});
+    const [mensajeError, setMensajeError] = useState('');
 
     //inicializar useNavigate
     const navigate = useNavigate();
 
+    const setField = (field, value) => {
+        setForm({
+          ...form,
+          [field]: value
+        });
+        // Check and see if errors exist, and remove them from the error object:
+        if ( !!errors[field] ) setErrors({
+            ...errors,
+            [field]: null
+        });
+    }
+
+    const findFormErrors = () => {
+        const { email, password } = form;
+        const newErrors = {}
+        // email errors
+        if ( !email || email === '' ) newErrors.email = 'Ingrese su email'
+        else if (!cantidadCaracteres(email, 2, 30))  newErrors.email = 'El email debe tener entre 2 y 30 caracteres'
+        else if (!validarEmail(email)) newErrors.email = 'Ingrese un email válido'
+
+        // password errors
+        if ( !password || password === '' ) newErrors.password = 'Ingrese su password'
+        else if (!cantidadCaracteres(password, 5, 10))  newErrors.password = 'La contraseña debe tener entre 5 y 10 caracteres'
+    
+        return newErrors
+    }
+
     const handleSubmit = async(e)=>{
         e.preventDefault();
+        
         //validar
-
-        //crear el objeto
-        const usuario = {
-            email,
-            password
+        const newErrors = findFormErrors();
+        if ( Object.keys(newErrors).length > 0 ) {
+            // We got errors!
+            setErrors(newErrors);
+            return;
         }
-
-        if (email==='administrador')
+        
+        const usuario = form;
+        usuario.valido = false; //invalido por defecto
+        setMensajeError('');
+        if (usuario.email==='admin@gmail.com' && usuario.password ==='12345')
         {
             usuario.valido=true;
             usuario.perfil='admin';
-            validateUser(usuario);
+            setLoggedUser(usuario);
             navigate("/receta/administrar");
         }
-        else if (email==='usuario') 
+        else if (usuario.email==='user@gmail.com' && usuario.password ==='12345') 
         {
             usuario.valido=true;
             usuario.perfil='usuario';
-            validateUser(usuario);
+            setLoggedUser(usuario);
             navigate("/");
         }
         else {
-            usuario.valido=false;
-            invalidateUser(usuario);
+            setMensajeError('Usario o contraseña no válido(s)');
         }
 
         /*
@@ -84,11 +113,13 @@ const Login = () => {
             <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3" controlId="formEmail">
                     <Form.Label>Nombre</Form.Label>
-                    <Form.Control type="text" placeholder="tumail@gmail.com" onChange={(e) => setEmail(e.target.value)} />
+                    <Form.Control type="text" placeholder="tumail@gmail.com" onChange={(e) => setField('email',e.target.value)} isInvalid={ !!errors.email }/>
+                    <Form.Control.Feedback type='invalid'>{ errors.email }</Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formPassword">
                     <Form.Label>Password</Form.Label>
-                    <Form.Control type="text" onChange={(e) => setPassword(e.target.value)} />
+                    <Form.Control type="password" onChange={(e) => setField('password', e.target.value)} isInvalid={ !!errors.password }/>
+                    <Form.Control.Feedback type='invalid'>{ errors.password }</Form.Control.Feedback>
                 </Form.Group>
 
                 <Button variant="primary" type="submit" className="me-1">
@@ -98,7 +129,7 @@ const Login = () => {
                     Cancelar
                 </Button>
             </Form>
-            {mensajeError === true ? <Alert variant="danger">Debe corregir los datos</Alert> : null}
+            {mensajeError !== '' ? <Alert className="mt-3" variant="danger">{mensajeError}</Alert> : null}
         </section>
     );
 };
