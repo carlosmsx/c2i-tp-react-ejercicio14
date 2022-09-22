@@ -73,18 +73,19 @@ const EditarReceta = () => {
             if (respuesta.status === 200)
             {
                 Swal.fire(
-                    'Receta modificado',
-                    'El receta fue modificado correctamente',
+                    'Receta modificada',
+                    'La receta fue modificado correctamente',
                     'success'
                 );
 
                 //redirecciono a la tabla de recetas
-                navegacion('/administrar');
+                navegacion('/receta/administrar');
             }
         }
         catch(error)
         {
             console.log(error);
+            //TODO
         }
     }
 
